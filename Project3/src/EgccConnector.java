@@ -104,65 +104,112 @@ public class EgccConnector {
     	return false;
     }
 
+    // Fill in code here that displays all the items (all attributes) that the user has bid on.
     public void viewMyBiddingItems () {
-	// Fill in code here that displays all the items (all attributes) that the user has bid on.
+    	try {
+    		Statement stmt = conn.createStatement();
+			// Specify the SQL query to run and execute the query. 
+			// Store the result in a ResultSet Object
+			ResultSet rst = stmt.executeQuery("select * from Bid where BuerID = " + Integer.toString(userID));
+			// Get the metadata of the query and store it in a ResultSetMetaData object
+			ResultSetMetaData rsmd = rst.getMetaData();
+			// Get the number of columns retrieved 
+			int numberOfColumns = rsmd.getColumnCount();
+			// Go over the columns and print the name of the columns. 
+			for (int i =0; i< numberOfColumns; i++ )
+				// Note that the columns start at 1
+			System.out.print(rsmd.getColumnName(i+1)+ "\t"); //cuz THEY START AT 1 NOT 0 #dum
+			System.out.println();
+			// Go over the rows in the ResultSet object
+			while (rst.next()) {
+			String row = "";
+			// Use getString if you are reading a varchar. 
+			// Again note that the column number starts at 1
+			// There are getInt(), getDouble(), getDate() and many other methods to read data.
+			row += rst.getString(1) + "\t";
+			row += rst.getString(2) + "\t";
+			row += rst.getString(3);
+			System.out.println(row);	
+			}
+			// Make sure you close the statement object when you are done.
+			stmt.close();
+    	} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
     }
 
+    //Ian
+    // Fill in code here that displays all the items (all attributes) that the user has put up for auction. 
     public void viewMyItems() {
-	// Fill in code here that displays all the items (all attributes) that the user has put up for auction. 
+    	
     }
 
+    //Nate
+    // Fill in code here that displays all the items (title, description, price, categoryID, dateSold and dateShipped) that the user has purchased
     public void viewMyPurchases() {
-	// Fill in code here that displays all the items (title, description, price, categoryID, dateSold and dateShipped) that the user has purchased
+    	
     }
 
+    //Ian
+    // fill in code here that displays all the items whose description contains the keyword
     public void searchByKeyword(String keyword) {
-	// fill in code here that displays all the items whose description contains the keyword
+    	
     }
 
+    //Nate
+    // return the rating of the seller that is selling the item
     public double viewSellerRating(int itemID) {
-	// return the rating of the seller that is selling the item
-	return 0.0;
+    	
+    	return 0.0;
     }
-    
+
+    //Ian
+    // put the item specified up for auction 
+    //returns true if operation succeeded, false otherwise
     public boolean putItem(String title, double startingBid, String endDate, String categories[]) {
-	// put the item specified up for auction 
-	//returns true if operation succeeded, false otherwise
-	return false;
+    	return false;
     }
-    
+
+    //Nate
+    //ships the item specified
+    //returns true if operation succeeded, false otherwise
     public boolean shipItem(int itemID) {
-	//ships the item specified
-	//returns true if operation succeeded, false otherwise
-	return false;
+    	return false;
     }
     
+    //Ian
+    //returns the value of the highest bid. You can assume that the trigger is working properly.
     public double viewHighestBid (int itemID) {
-	//returns the value of the highest bid. You can assume that the trigger is working properly.
+    	
     }
 
+    //Nate
+    // place the bid on the item 
+    //returns true if operation succeeded, false otherwise
     public boolean placeBid(int itemID, double bidValue) {
-	// place the bid on the item 
-	//returns true if operation succeeded, false otherwise
-	return false;
+    	return false;
     }
 
+    //Ian
+    // place a rating on the seller specified
+    //returns true if operation succeeded, false otherwise
     public boolean rateSeller(int sellerID, double rating) {
-	// place a rating on the seller specified
-	//returns true if operation succeeded, false otherwise
-	return false;
+    	return false;
     }	
 
+    //Nate
+    // close the auction on the item whose ID is specified
+    //returns true if operation succeeded, false otherwise
     public boolean closeAuction (int itemID) {
-	// close the auction on the item whose ID is specified
-	//returns true if operation succeeded, false otherwise
-	return false;
+    	return false;
     }
 
+    //Ian
+    // close the connection here and any preparedstatements you added
+    //returns true if operation succeeded, false otherwise
     public boolean closeConnection() { 
-	// close the connection here and any preparedstatements you added
-	//returns true if operation succeeded, false otherwise
-	return true;
+    	return true;
     }
 
 }
