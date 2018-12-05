@@ -2,7 +2,7 @@ import java.util.Scanner;
 
 public class EgccApplication {
 	public static void main(String[] args){
-		//initialization
+		//some initialization
 		Scanner scnr = new Scanner(System.in);
 		boolean running = true;
 		int command;
@@ -26,9 +26,23 @@ public class EgccApplication {
 			//execute command
 			if(command == 13){
 				running = false;
+				connect.closeConnection();
+			}else if(command == 0){
+				System.out.println("Please enter the user's username: ");
+				userNm = scnr.next();
+				System.out.println("Password: ");
+				psswd = scnr.next();
+				connect.login(userNm, psswd);
+			}else if(command == 1){
+				System.out.println("Please enter your username: ");
+				userNm = scnr.next();
+				System.out.println("Please enter your new password");
+				psswd = scnr.next();
+				connect.changePassword(userNm, psswd);
 			}
 		}
 		
 		System.out.println("Thank you for using eGCC!");
+		scnr.close();
 	}
 }

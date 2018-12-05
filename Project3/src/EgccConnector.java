@@ -181,7 +181,7 @@ public class EgccConnector {
     //Ian
     //returns the value of the highest bid. You can assume that the trigger is working properly.
     public double viewHighestBid (int itemID) {
-    	
+    	return 0.0;
     }
 
     //Nate
@@ -208,8 +208,19 @@ public class EgccConnector {
     //Ian
     // close the connection here and any preparedstatements you added
     //returns true if operation succeeded, false otherwise
-    public boolean closeConnection() { 
-    	return true;
+    public boolean closeConnection() {	
+		try{
+			conn.close();
+	    	return true;
+		}
+    	catch(SQLException e1){
+    		System.out.println(e1.getMessage());
+    		return false;
+    	}
+		catch(Exception e2){
+			System.out.println(e2.getMessage());
+			return false;
+		}
     }
 
 }
