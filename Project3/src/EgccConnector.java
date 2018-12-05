@@ -148,7 +148,41 @@ public class EgccConnector {
     //Nate
     // Fill in code here that displays all the items (title, description, price, categoryID, dateSold and dateShipped) that the user has purchased
     public void viewMyPurchases() {
-    	
+    	try {
+    		Statement stmt = conn.createStatement();
+			
+    		// Specify the SQL query to run and execute the query. 
+			// Store the result in a ResultSet Object
+			ResultSet rst = stmt.executeQuery("select title, description, price, categoryID, dateSold, dateShipped from purchase join item on purchase.ItemID = item.ItemID join itemCategory on item.ItemID = itemCategory.ItemID where purchase.buyerID = "+Integer.toString(userID));
+			
+			// Get the metadata of the query and store it in a ResultSetMetaData object
+			ResultSetMetaData rsmd = rst.getMetaData();
+			
+			// Get the number of columns retrieved 
+			int numberOfColumns = rsmd.getColumnCount();
+			
+			// Go over the columns and print the name of the columns. 
+			for (int i =0; i< numberOfColumns; i++ )
+				// Note that the columns start at 1
+				System.out.print(rsmd.getColumnName(i+1)+ "\t"); //because THEY START AT 1 NOT 0 #dum
+				System.out.println();
+				// Go over the rows in the ResultSet object
+				while (rst.next()) {
+					String row = "";
+					// Use getString if you are reading a varchar. 
+					// Again note that the column number starts at 1
+					// There are getInt(), getDouble(), getDate() and many other methods to read data.
+					row += rst.getString(1) + "\t";
+					row += rst.getString(2) + "\t";
+					row += rst.getString(3);
+					System.out.println(row);	
+			}
+			// Make sure you close the statement object when you are done.
+			stmt.close();
+    	} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
     }
 
     //Ian
