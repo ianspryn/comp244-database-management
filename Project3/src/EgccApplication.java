@@ -6,6 +6,7 @@ public class EgccApplication {
 		Scanner scnr = new Scanner(System.in);
 		boolean running = true;
 		int command;
+		boolean success;
 		
 		//logging in
 		System.out.println("Welcome to eGCC\n~~~~~~~~~~~~~~~~~~~~~~~~~~\nPlease enter your login credentials:");
@@ -27,39 +28,71 @@ public class EgccApplication {
 			if(command == 13){					//exiting the application
 				running = false;
 				connect.closeConnection();
-			}else if(command == 0){				//login
+			}
+			
+			else if(command == 0){				//login
 				System.out.println("Please enter your username: ");
 				userNm = scnr.next();
 				System.out.println("Password: ");
 				psswd = scnr.next();
-				connect.login(userNm, psswd);
-			}else if(command == 1){				//change password
+				success = connect.login(userNm, psswd);
+				
+				if(success){
+					System.out.println("Login successful, welcome "+userNm+"!");
+				}else{
+					System.out.println("Wrong username/password, please try again.");
+				}
+			}
+			
+			else if(command == 1){				//change password
 				System.out.println("Please enter your username: ");
 				userNm = scnr.next();
 				System.out.println("Please enter your new password");
 				psswd = scnr.next();
 				connect.changePassword(userNm, psswd);
-			}else if(command == 2){				//view items I bid on
+			}
+			
+			else if(command == 2){				//view items I bid on
+				connect.viewMyBiddingItems();
+			}
+			
+			else if(command == 3){				//view my items
 				//TODO: fill in
-			}else if(command == 3){				//view my items
+			}
+			
+			else if(command == 4){				//view my purchases
+				connect.viewMyPurchases();
+			}
+			
+			else if(command == 5){				//search by keyword
 				//TODO: fill in
-			}else if(command == 4){				//view my purchases
+			}
+			
+			else if(command == 6){				//view seller rating
 				//TODO: fill in
-			}else if(command == 5){				//search by keyword
+			}
+			
+			else if(command == 7){				//put item up for auction
 				//TODO: fill in
-			}else if(command == 6){				//view seller rating
+			}
+			
+			else if(command == 8){				//ship item
 				//TODO: fill in
-			}else if(command == 7){				//put item up for auction
+			}
+			
+			else if(command == 9){				//view highest bid
 				//TODO: fill in
-			}else if(command == 8){				//ship item
+			}
+			
+			else if(command == 10){			//place bid
 				//TODO: fill in
-			}else if(command == 9){				//view highest bid
+			}
+			
+			else if(command == 11){			//rate seller
 				//TODO: fill in
-			}else if(command == 10){			//place bid
-				//TODO: fill in
-			}else if(command == 11){			//rate seller
-				//TODO: fill in
-			}else if(command == 12){			//close auction
+			}
+			
+			else if(command == 12){			//close auction
 				//TODO: fill in
 			}
 		}

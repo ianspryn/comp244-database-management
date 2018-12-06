@@ -53,8 +53,8 @@ public class EgccConnector {
     		Statement stmt = conn.createStatement();
     		// Specify the SQL query to run and execute the query. 
     		// Store the result in a ResultSet Object
-    		ResultSet rst = stmt.executeQuery("select username, password from egccUser where username = " + username
-    				+ "and password = " + password);
+    		ResultSet rst = stmt.executeQuery("select username, password from egccUser where username = '" + username
+    				+ "' and password = '" + password+"'");
     		// Get the metadata of the query and store it in a ResultSetMetaData object
     		ResultSetMetaData rsmd = rst.getMetaData();
     		
@@ -67,8 +67,14 @@ public class EgccConnector {
     				userExists = false;
     			}    			
     		}
+    		
+    		//TODO: set userID = to whatever userID corresponds to the username
+    		ResultSet ID = stmt.executeQuery("select userID from egccuser where username = '"+username+"'");
+    		userID = ID.getInt(1);	
+    		
     		// Make sure you close the statement object when you are done.
     		stmt.close();	
+    		
     		return userExists;
     	} catch (SQLException e1) {
 			// TODO Auto-generated catch block
@@ -110,26 +116,27 @@ public class EgccConnector {
     		Statement stmt = conn.createStatement();
 			// Specify the SQL query to run and execute the query. 
 			// Store the result in a ResultSet Object
-			ResultSet rst = stmt.executeQuery("select * from Bid where BuerID = " + Integer.toString(userID));
+			ResultSet rst = stmt.executeQuery("select * from Bid where BuyerID = " + Integer.toString(userID));
 			// Get the metadata of the query and store it in a ResultSetMetaData object
 			ResultSetMetaData rsmd = rst.getMetaData();
 			// Get the number of columns retrieved 
 			int numberOfColumns = rsmd.getColumnCount();
 			// Go over the columns and print the name of the columns. 
-			for (int i =0; i< numberOfColumns; i++ )
+			for (int i =0; i< numberOfColumns; i++ ){
 				// Note that the columns start at 1
-			System.out.print(rsmd.getColumnName(i+1)+ "\t"); //cuz THEY START AT 1 NOT 0 #dum
-			System.out.println();
-			// Go over the rows in the ResultSet object
-			while (rst.next()) {
-			String row = "";
-			// Use getString if you are reading a varchar. 
-			// Again note that the column number starts at 1
-			// There are getInt(), getDouble(), getDate() and many other methods to read data.
-			row += rst.getString(1) + "\t";
-			row += rst.getString(2) + "\t";
-			row += rst.getString(3);
-			System.out.println(row);	
+				System.out.print(rsmd.getColumnName(i+1)+ "\t"); //cuz THEY START AT 1 NOT 0 #dum
+				System.out.println();
+				// Go over the rows in the ResultSet object
+				while (rst.next()) {
+					String row = "";
+					// Use getString if you are reading a varchar. 
+					// Again note that the column number starts at 1
+					// There are getInt(), getDouble(), getDate() and many other methods to read data.
+					row += rst.getString(1) + "\t";
+					row += rst.getString(2) + "\t";
+					row += rst.getString(3);
+					System.out.println(row);	
+				}
 			}
 			// Make sure you close the statement object when you are done.
 			stmt.close();
