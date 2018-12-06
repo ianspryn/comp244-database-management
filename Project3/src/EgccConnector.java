@@ -194,8 +194,23 @@ public class EgccConnector {
     //Nate
     // return the rating of the seller that is selling the item
     public double viewSellerRating(int itemID) {
-    	
-    	return 0.0;
+    	try {
+    		Statement stmt = conn.createStatement();
+			
+    		// Specify the SQL query to run and execute the query. 
+			// Store the result in a ResultSet Object
+			ResultSet rst = stmt.executeQuery("select avg(rating) from sellerRating join item on sellerRating.sellerID = item.SellerID where item.ItemID = " + itemID);
+
+			double row = rst.getDouble(1);			
+			
+			// Make sure you close the statement object when you are done.
+			stmt.close();
+			return row;	
+    	} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return 0.0;
+		}
     }
 
     //Ian
@@ -209,7 +224,22 @@ public class EgccConnector {
     //ships the item specified
     //returns true if operation succeeded, false otherwise
     public boolean shipItem(int itemID) {
-    	return false;
+    	try {
+    		Statement stmt = conn.createStatement();
+			
+    		// Specify the SQL query to run and execute the query. 
+			// Store the result in a ResultSet Object
+			double numRowsEffectedItem = stmt.executeUpdate("update item set status = 'shipped' where ItemID = " + itemID);
+			double numRowsEffectedPurchase = stmt.executeUpdate("update purchase set dateSold = current_date where ItemID = " + itemID);			
+			
+			// Make sure you close the statement object when you are done.
+			stmt.close();
+			return true;
+    	} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return false;
+		}
     }
     
     //Ian
@@ -222,7 +252,27 @@ public class EgccConnector {
     // place the bid on the item 
     //returns true if operation succeeded, false otherwise
     public boolean placeBid(int itemID, double bidValue) {
-    	return false;
+    	try {
+    		Statement stmt = conn.createStatement();
+			
+    		// Specify the SQL query to run and execute the query. 
+			// Store the result in a ResultSet Object
+    		double highestBid = viewHighestBid(itemID);
+    		if(bidValue > highestBid){
+    			double numRowsEffectedBid = stmt.executeUpdate("insert into Bid values ("+userID+", "+itemID+", CURDATE(), CURTIME(), "+bidValue+")");
+    			stmt.close();
+    			return true;
+    		}else{
+    			System.out.println("Your bid isn't high enough");
+    			stmt.close();
+    			return false;
+    		}
+			
+    	} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return false;
+		}
     }
 
     //Ian
@@ -236,7 +286,21 @@ public class EgccConnector {
     // close the auction on the item whose ID is specified
     //returns true if operation succeeded, false otherwise
     public boolean closeAuction (int itemID) {
-    	return false;
+    	try {
+    		Statement stmt = conn.createStatement();
+			
+    		// Specify the SQL query to run and execute the query. 
+			// Store the result in a ResultSet Object
+    		double numRowsEffectedItem = stmt.executeUpdate("update item set status = 'closed' where ItemID = "+itemID);
+    		double numRowsEffectedPurchase = stmt.executeUpdate("insert into purchase values ("+userID+", "+itemID+", (select highestBid from item where ItemID = "+itemID+"), current_date, null)");
+    		stmt.close();
+    		return true;  		
+			
+    	} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return false;
+		}
     }
 
     //Ian
