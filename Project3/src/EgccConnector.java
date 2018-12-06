@@ -15,7 +15,7 @@ public class EgccConnector {
     String password;
     String schema;
     // userID of the egccuser once they login
-    int userID;
+    int userID = 111;
  
     // Fill in code here to initialize conn so it connects to the database
     // using the provided parameters
@@ -208,6 +208,7 @@ public class EgccConnector {
 			// Store the result in a ResultSet Object
 			ResultSet rst = stmt.executeQuery("select avg(rating) from sellerRating join item on sellerRating.sellerID = item.SellerID where item.ItemID = " + itemID);
 
+			//TODO: FIX THIS STUFF
 			double row = rst.getDouble(1);			
 			
 			// Make sure you close the statement object when you are done.

@@ -7,6 +7,11 @@ public class EgccApplication {
 		boolean running = true;
 		int command;
 		boolean success;
+		String searchTerm;
+		int itemID;
+		int sellerID;
+		double outcome;
+		double input;
 		
 		//logging in
 		System.out.println("Welcome to eGCC\n~~~~~~~~~~~~~~~~~~~~~~~~~~\nPlease enter your login credentials:");
@@ -57,7 +62,7 @@ public class EgccApplication {
 			}
 			
 			else if(command == 3){				//view my items
-				//TODO: fill in
+				connect.viewMyItems();
 			}
 			
 			else if(command == 4){				//view my purchases
@@ -65,11 +70,16 @@ public class EgccApplication {
 			}
 			
 			else if(command == 5){				//search by keyword
-				//TODO: fill in
+				System.out.println("Please enter the word to search for: ");
+				searchTerm = scnr.next();
+				connect.searchByKeyword(searchTerm);
 			}
 			
 			else if(command == 6){				//view seller rating
-				//TODO: fill in
+				System.out.println("Please enter the item ID whose seller's rating you want to display: ");
+				itemID = scnr.nextInt();
+				outcome = connect.viewSellerRating(itemID);
+				System.out.println("Rating: "+outcome);
 			}
 			
 			else if(command == 7){				//put item up for auction
@@ -77,23 +87,61 @@ public class EgccApplication {
 			}
 			
 			else if(command == 8){				//ship item
-				//TODO: fill in
+				System.out.println("Please enter the ID of the item to be shipped: ");
+				itemID = scnr.nextInt();
+				success = connect.shipItem(itemID);
+				if(success){
+					System.out.println("Item shipped successfully.");
+				}else{
+					System.out.println("Could not ship.");
+				}
 			}
 			
 			else if(command == 9){				//view highest bid
-				//TODO: fill in
+				System.out.println("Please enter the ID of the item: ");
+				itemID = scnr.nextInt();
+				outcome = connect.viewHighestBid(itemID);
+				System.out.println("Highest bid: " + outcome);
 			}
 			
 			else if(command == 10){			//place bid
-				//TODO: fill in
+				System.out.println("Please enter the ID of the item: ");
+				itemID = scnr.nextInt();
+				System.out.println("Please enter the bid: ");
+				input = scnr.nextDouble();
+				success = connect.placeBid(itemID, input);
+				
+				if(success){
+					System.out.println("Bid successfully placed.");
+				}else{
+					System.out.println("Could not place bid.");
+				}
 			}
 			
 			else if(command == 11){			//rate seller
-				//TODO: fill in
+				System.out.println("Please enter the seller's ID: ");
+				sellerID = scnr.nextInt();
+				System.out.println("Please enter the rating: ");
+				input = scnr.nextDouble();
+				success = connect.rateSeller(sellerID, input);
+				
+				if(success){
+					System.out.println("Seller successfully rated.");
+				}else{
+					System.out.println("Could not rate Seller.");
+				}
 			}
 			
 			else if(command == 12){			//close auction
-				//TODO: fill in
+				System.out.println("Please enter the ID of the item: ");
+				itemID = scnr.nextInt();
+				success = connect.closeAuction(itemID);
+				
+				if(success){
+					System.out.println("Auction closed.");
+				}else{
+					System.out.println("Could not close auction.");
+				}
 			}
 		}
 		
