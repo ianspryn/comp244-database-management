@@ -15,11 +15,13 @@ public class EgccApplication {
 		
 		//logging in
 		System.out.println("Username: (example: 123456) Much apprec");
-		String userNm = "u" + scnr.next();
+		String userNm = scnr.next();
+		String schema = "schema" + userNm;
+		userNm = "u" + userNm;
 		System.out.println("Password: ");
 		String psswd = scnr.next();
-		System.out.println("Schema: ");
-		String schema = scnr.next();
+//		System.out.println("Schema: ");
+//		String schema = scnr.next();
 		
 		EgccConnector connect = new EgccConnector(userNm, psswd, schema);
 		
