@@ -55,6 +55,7 @@ public class EgccConnector {
     		// Specify the SQL query to run and execute the query. 
     		// Store the result in a ResultSet Object
     		ResultSet rst = stmt.executeQuery();
+
     		if (!rst.isBeforeFirst() ) {    
     		    userExists = false;
     		} else {
