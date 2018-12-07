@@ -14,7 +14,7 @@ public class EgccApplication {
 		double input;
 		
 		//logging in
-		System.out.println("Username: (example: u123456) PLEASE AND THANK YOU");
+		System.out.println("Username: (example: 123456) Much apprec");
 		String userNm = "u" + scnr.next();
 		System.out.println("Password: ");
 		String psswd = scnr.next();
@@ -161,7 +161,7 @@ public class EgccApplication {
 			}
 		}
 		
-		System.out.println("Thank you for using eGCC!");
+		System.out.println("You have logged out. Thank you for using eGCC!");
 		scnr.close();
 	}
 }
