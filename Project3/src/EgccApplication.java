@@ -25,48 +25,41 @@ public class EgccApplication {
 		
 		System.out.println("Welcome to eGCC\n~~~~~~~~~~~~~~~~~~~~~~~~~~\nPlease enter your login credentials:");
 		while(running){
+			//Login as member of database
+			System.out.println("LOGIN\n\nPlease enter your username: ");
+			userNm = scnr.next();
+			System.out.println("Password: ");
+			psswd = scnr.next();
+			success = connect.login(userNm, psswd);
+			
+			if(success){
+				System.out.println("\nLogin successful, welcome "+userNm+"!");
+			}else{
+				System.out.println("\nWrong username/password, please try again.");
+			}
+			
 			//Get user input
 			System.out.println(
-					"Please enter one of the following commands:\n"
-					+ "0: Change my username\n"
+					"\nPlease enter one of the following commands:\n"
+					+ "0: Change my password\n"
 					+ "1: View items I bid on\n"
 					+ "2: View my items\n"
 					+ "3: View my purchases\n"
 					+ "4: Search by keyword\n"
 					+ "5: View seller rating\n"
-					+ "6: View my purchases\n"
-					+ "7: Put item up for auction\n"
-					+ "8: Ship an item\n"
-					+ "9: View highest bid\n"
-					+ "10: Place a bid\n"
-					+ "11: Rate a seller\n"
-					+ "12: Close an auction\n"
-					+ "13: Exit eGCC\n"
+					+ "6: Put item up for auction\n"
+					+ "7: Ship an item\n"
+					+ "8: View highest bid\n"
+					+ "9: Place a bid\n"
+					+ "10: Rate a seller\n"
+					+ "11: Close an auction\n"
+					+ "12: Exit eGCC\n"
 					+ "Input a command: "
 				);
 			command = scnr.nextInt();
 			
 			//execute command
-			if(command == 13){					//exiting the application
-				running = false;
-				connect.closeConnection();
-			}
-			
-			else if(command == 0){				//login
-				System.out.println("Please enter your username: ");
-				userNm = scnr.next();
-				System.out.println("Password: ");
-				psswd = scnr.next();
-				success = connect.login(userNm, psswd);
-				
-				if(success){
-					System.out.println("Login successful, welcome "+userNm+"!");
-				}else{
-					System.out.println("Wrong username/password, please try again.");
-				}
-			}
-			
-			else if(command == 1){				//change password
+			if(command == 0){				//change password
 				System.out.println("Please enter your username: ");
 				userNm = scnr.next();
 				System.out.println("Please enter your new password");
@@ -74,36 +67,36 @@ public class EgccApplication {
 				connect.changePassword(userNm, psswd);
 			}
 			
-			else if(command == 2){				//view items I bid on
+			else if(command == 1){				//view items I bid on
 				connect.viewMyBiddingItems();
 			}
 			
-			else if(command == 3){				//view my items
+			else if(command == 2){				//view my items
 				connect.viewMyItems();
 			}
 			
-			else if(command == 4){				//view my purchases
+			else if(command == 3){				//view my purchases
 				connect.viewMyPurchases();
 			}
 			
-			else if(command == 5){				//search by keyword
+			else if(command == 4){				//search by keyword
 				System.out.println("Please enter the word to search for: ");
 				searchTerm = scnr.next();
 				connect.searchByKeyword(searchTerm);
 			}
 			
-			else if(command == 6){				//view seller rating
+			else if(command == 5){				//view seller rating
 				System.out.println("Please enter the item ID whose seller's rating you want to display: ");
 				itemID = scnr.nextInt();
 				outcome = connect.viewSellerRating(itemID);
 				System.out.println("Rating: "+outcome);
 			}
 			
-			else if(command == 7){				//put item up for auction
+			else if(command == 6){				//put item up for auction
 				//TODO: fill in
 			}
 			
-			else if(command == 8){				//ship item
+			else if(command == 7){				//ship item
 				System.out.println("Please enter the ID of the item to be shipped: ");
 				itemID = scnr.nextInt();
 				success = connect.shipItem(itemID);
@@ -114,14 +107,14 @@ public class EgccApplication {
 				}
 			}
 			
-			else if(command == 9){				//view highest bid
+			else if(command == 8){				//view highest bid
 				System.out.println("Please enter the ID of the item: ");
 				itemID = scnr.nextInt();
 				outcome = connect.viewHighestBid(itemID);
 				System.out.println("Highest bid: " + outcome);
 			}
 			
-			else if(command == 10){			//place bid
+			else if(command == 9){			//place bid
 				System.out.println("Please enter the ID of the item: ");
 				itemID = scnr.nextInt();
 				System.out.println("Please enter the bid: ");
@@ -135,7 +128,7 @@ public class EgccApplication {
 				}
 			}
 			
-			else if(command == 11){			//rate seller
+			else if(command == 10){			//rate seller
 				System.out.println("Please enter the seller's ID: ");
 				sellerID = scnr.nextInt();
 				System.out.println("Please enter the rating: ");
@@ -149,7 +142,7 @@ public class EgccApplication {
 				}
 			}
 			
-			else if(command == 12){			//close auction
+			else if(command == 11){			//close auction
 				System.out.println("Please enter the ID of the item: ");
 				itemID = scnr.nextInt();
 				success = connect.closeAuction(itemID);
@@ -159,6 +152,11 @@ public class EgccApplication {
 				}else{
 					System.out.println("Could not close auction.");
 				}
+			}
+			
+			else if(command == 12){					//exiting the application
+				running = false;
+				connect.closeConnection();
 			}
 		}
 		
