@@ -24,20 +24,21 @@ public class EgccApplication {
 		EgccConnector connect = new EgccConnector(userNm, psswd, schema);
 		
 		System.out.println("Welcome to eGCC\n~~~~~~~~~~~~~~~~~~~~~~~~~~\nPlease enter your login credentials:");
+		
+		//Login as member of database
+		System.out.println("LOGIN\n\nPlease enter your username: ");
+		userNm = scnr.next();
+		System.out.println("Password: ");
+		psswd = scnr.next();
+		success = connect.login(userNm, psswd);
+		
+		if(success){
+			System.out.println("\nLogin successful, welcome "+userNm+"!");
+		}else{
+			System.out.println("\nWrong username/password, please try again.");
+		}
+		
 		while(running){
-			//Login as member of database
-			System.out.println("LOGIN\n\nPlease enter your username: ");
-			userNm = scnr.next();
-			System.out.println("Password: ");
-			psswd = scnr.next();
-			success = connect.login(userNm, psswd);
-			
-			if(success){
-				System.out.println("\nLogin successful, welcome "+userNm+"!");
-			}else{
-				System.out.println("\nWrong username/password, please try again.");
-			}
-			
 			//Get user input
 			System.out.println(
 					"\nPlease enter one of the following commands:\n"
