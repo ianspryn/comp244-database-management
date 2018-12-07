@@ -81,6 +81,7 @@ public class EgccConnector {
 			int rows = pstmt.executeUpdate();
 			//Check if any rows got updated. 
 			if (rows > 0) {
+				conn.commit();
 				updateSuccessful = true;
 			}
 			pstmt.close();
@@ -308,13 +309,14 @@ public class EgccConnector {
     		
     		// Specify the SQL query to run and execute the query. 
 			// Store the result in a ResultSet Object
-			double numRowsEffectedItem = stmt.executeUpdate();
-			double numRowsEffectedPurchase = stmt2.executeUpdate();			
+			int numRowsEffectedItem = stmt.executeUpdate();
+			int numRowsEffectedPurchase = stmt2.executeUpdate();			
 			
 			// Make sure you close the statement object when you are done.
 			stmt.close();
 			stmt2.close();
 			if (numRowsEffectedItem > 0 && numRowsEffectedPurchase > 0) {
+				conn.commit();
 				return true;
 			}
     	} catch (SQLException e) {
@@ -353,9 +355,15 @@ public class EgccConnector {
 			// Store the result in a ResultSet Object
     		double highestBid = viewHighestBid(itemID);
     		if(bidValue > highestBid){
-    			double numRowsEffectedBid = stmt.executeUpdate();
-    			stmt.close();
-    			return true;
+    			int numRowsEffectedBid = stmt.executeUpdate();
+    			if(numRowsEffectedBid > 0){
+    				stmt.close();
+        			conn.commit();
+        			return true;
+    			}else{
+    				stmt.close();
+    				return false;
+    			}
     		}else{
     			System.out.println("Your bid isn't high enough");
     			stmt.close();
@@ -412,17 +420,25 @@ public class EgccConnector {
 			
     		// Specify the SQL query to run and execute the query. 
 			// Store the result in a ResultSet Object
-    		double numRowsEffectedItem = stmt.executeUpdate();
-    		double numRowsEffectedPurchase = stmt2.executeUpdate();
-    		stmt.close();
-    		stmt2.close();
-    		return true;  		
+    		int numRowsEffectedItem = stmt.executeUpdate();
+    		int numRowsEffectedPurchase = stmt2.executeUpdate();
+    		
+    		if(numRowsEffectedItem > 0 && numRowsEffectedPurchase > 0){
+    			stmt.close();
+        		stmt2.close();
+        		return true;  		
+    		}else{
+    			stmt.close();
+        		stmt2.close();
+        		return false;  
+    		}
+    		
 			
     	} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return false;
 		}
+    	return false;
     }
 
     //Ian

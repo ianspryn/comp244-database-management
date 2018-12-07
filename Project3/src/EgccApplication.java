@@ -15,7 +15,7 @@ public class EgccApplication {
 		String[] categories;
 		
 		//logging in
-		System.out.println("Username: (example: 123456) Much apprec");
+		System.out.println("Username: (example: 123456)");
 		String userNm = scnr.next();
 		String schema = "schema" + userNm;
 		userNm = "u" + userNm;
@@ -115,8 +115,20 @@ public class EgccApplication {
 			else if(command == 6){				//put item up for auction
 				System.out.println("Please enter the title: ");
 				String title = scnr.next();
-				System.out.println("Please enter the starting bid: ");
-				double startBid = scnr.nextDouble();
+				double startBid = 1.0;
+				
+				running = true;
+				while(running){
+					System.out.println("Please enter the starting bid: ");
+					startBid = scnr.nextDouble();
+					
+					if(startBid > 0){
+						running = false;
+					}else{
+						System.out.println("Starting bid must be greater than $0.00.");
+					}
+				}
+				
 				System.out.println("Please enter the end date (YYYY-MM-DD): ");
 				String date = scnr.next();
 				System.out.println("How many categories?");
@@ -133,7 +145,7 @@ public class EgccApplication {
 				if(success){
 					System.out.println("Put item up for auction successfully.");
 				}else{
-					System.out.println("Could not put item up for auction.");
+					System.out.println("Could not put item up for auction. Category does not exist.");
 				}
 			}
 			
@@ -144,7 +156,7 @@ public class EgccApplication {
 				if(success){
 					System.out.println("Item shipped successfully.");
 				}else{
-					System.out.println("Could not ship.");
+					System.out.println("Could not ship. Not a valid item ID or user does not have permission to ship this item.");
 				}
 			}
 			
@@ -163,6 +175,7 @@ public class EgccApplication {
 			else if(command == 9){			//place bid
 				System.out.println("Please enter the ID of the item: ");
 				itemID = scnr.nextInt();
+				
 				System.out.println("Please enter the bid: ");
 				input = scnr.nextDouble();
 				success = connect.placeBid(itemID, input);
