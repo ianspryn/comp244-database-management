@@ -37,9 +37,10 @@ public class EgccConnector {
 			conn.setAutoCommit(false);
 			//if all goes well, this statement should print
 			System.out.println("Connection successful!");
+			EgccApplication.isLoggedIn = true;
     	} catch (SQLException ex) {
     		//if an exception is thrown, display the message so that we know what went wrong.
-            System.out.print(ex.getMessage());
+            System.out.println(ex.getMessage());
         }	
     }
 
@@ -197,6 +198,9 @@ public class EgccConnector {
     // fill in code here that displays all the items whose description contains the keyword
     public void searchByKeyword(String keyword) {
     	try {
+    		//add escape character before single and double quotes
+    		keyword = keyword.replace("'", "\\'");
+    		keyword = keyword.replace("\"", "\\\"");
     		Statement stmt = conn.createStatement();
 			//prepare and run SQL statement
     		ResultSet rst = stmt.executeQuery("select * from item where description like '%" + keyword + "%'");
@@ -230,7 +234,7 @@ public class EgccConnector {
     // return the rating of the seller that is selling the item
     public double viewSellerRating(int itemID) {
     	try {
-    		PreparedStatement stmt = conn.prepareStatement("select avg(rating) from sellerRating join item on sellerRating.sellerID = item.SellerID where item.ItemID = " + itemID);
+    		PreparedStatement stmt = conn.prepareStatement("select avg(rating) from sellerrating where SellerID in (select sellerID from item where itemID = " + itemID + ")");
 			
     		// Specify the SQL query to run and execute the query. 
 			// Store the result in a ResultSet Object
@@ -320,9 +324,8 @@ public class EgccConnector {
     		conn.commit();
     		return true;
     	} catch (SQLException e) {
-    		e.printStackTrace();
+    		System.out.println("Date must be in format \"YYYY-MM-DD\"");
     	} catch (ParseException e) {
-			// TODO Auto-generated catch block
     		System.out.println("Date must be in format \"YYYY-MM-DD\"");
 		}
     	return false;
@@ -333,17 +336,28 @@ public class EgccConnector {
     //returns true if operation succeeded, false otherwise
     public boolean shipItem(int itemID) {
     	try {
-    		PreparedStatement stmt = conn.prepareStatement("update item set status = 'shipped' where ItemID = " + itemID);
-    		PreparedStatement stmt2 = conn.prepareStatement("update purchase set dateSold = CURDATE() where ItemID = " + itemID);
+    		Statement stmt = conn.createStatement();
+    		ResultSet rst = stmt.executeQuery("select SellerID from item where ItemID = " + itemID);
+    		
+    		rst.next();
+    		if (rst.getInt("SellerID") != userID) {
+    			System.out.println("Can only update items that belong to the seller");
+    			stmt.close();
+    			return false;
+    		}
+    		stmt.close();
+    		
+    		PreparedStatement pstmt = conn.prepareStatement("update item set status = 'shipped' where ItemID = " + itemID);
+    		PreparedStatement pstmt2 = conn.prepareStatement("update purchase set dateSold = CURDATE() where ItemID = " + itemID);
     		
     		// Specify the SQL query to run and execute the query. 
 			// Store the result in a ResultSet Object
-			double numRowsEffectedItem = stmt.executeUpdate();
-			double numRowsEffectedPurchase = stmt2.executeUpdate();			
+			int numRowsEffectedItem = pstmt.executeUpdate();
+			int numRowsEffectedPurchase = pstmt2.executeUpdate();
 			
 			// Make sure you close the statement object when you are done.
-			stmt.close();
-			stmt2.close();
+			pstmt.close();
+			pstmt2.close();
 			if (numRowsEffectedItem > 0 && numRowsEffectedPurchase > 0) {
 				conn.commit();
 				return true;
@@ -384,7 +398,7 @@ public class EgccConnector {
 			// Store the result in a ResultSet Object
     		double highestBid = viewHighestBid(itemID);
     		if(bidValue > highestBid){
-    			double numRowsEffectedBid = stmt.executeUpdate();
+    			int numRowsEffectedBid = stmt.executeUpdate();
     			stmt.close();
     			return true;
     		}else{

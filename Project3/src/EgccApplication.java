@@ -1,6 +1,9 @@
 import java.util.Scanner;
 
 public class EgccApplication {
+	
+	protected static boolean isLoggedIn = false;
+	
 	public static void main(String[] args){
 		//some initialization
 		Scanner scnr = new Scanner(System.in);
@@ -15,22 +18,26 @@ public class EgccApplication {
 		String[] categories;
 		
 		//logging in
-		System.out.println("Username: (example: 123456) Much apprec");
-		String userNm = scnr.next();
-		String schema = "schema" + userNm;
-		userNm = "u" + userNm;
-		System.out.println("Password: ");
-		String psswd = scnr.next();
-//		System.out.println("Schema: ");
-//		String schema = scnr.next();
+		String userNm = "", schema = "", psswd = "";
+		EgccConnector connect = null;
 		
-		EgccConnector connect = new EgccConnector(userNm, psswd, schema);
+		while (!isLoggedIn) {
+			System.out.println("Username: (example: 123456)");
+			userNm = scnr.next();
+			schema = "schema" + userNm;
+			userNm = "u" + userNm;
+			System.out.println("Password: ");
+			psswd = scnr.next();
+//			System.out.println("Schema: ");
+//			String schema = scnr.next();
+			connect = new EgccConnector(userNm, psswd, schema);
+		}
 		
 		System.out.println("Welcome to eGCC\n~~~~~~~~~~~~~~~~~~~~~~~~~~\nPlease enter your login credentials:");
 		
 		//Login as member of database
-		running = true;
-		while(running){
+		isLoggedIn = false;
+		while(!isLoggedIn){
 			System.out.println("LOGIN\n\nPlease enter your username: ");
 			userNm = scnr.next();
 			System.out.println("Password: ");
@@ -38,7 +45,7 @@ public class EgccApplication {
 			success = connect.login(userNm, psswd);
 			if(success){
 				System.out.println("\nLogin successful, welcome "+userNm+"!");
-				running = false;
+				isLoggedIn = true;
 			}else{
 				System.out.println("\nWrong username/password, please try again.");
 			}
@@ -65,7 +72,14 @@ public class EgccApplication {
 					+ "12: Exit eGCC\n"
 					+ "Input a command: "
 				);
+
+			while (!scnr.hasNextInt())
+			{
+				scnr.nextLine();
+				System.out.println("Please input only an integer");
+			}
 			command = scnr.nextInt();
+			
 			
 			//execute command
 			if(command == 0){				//change password
@@ -102,6 +116,11 @@ public class EgccApplication {
 			
 			else if(command == 5){				//view seller rating
 				System.out.println("Please enter the item ID whose seller's rating you want to display: ");
+				while (!scnr.hasNextInt())
+				{
+					scnr.next();
+					System.out.println("Please input only numbers");
+				}
 				itemID = scnr.nextInt();
 				outcome = connect.viewSellerRating(itemID);
 				
@@ -116,7 +135,17 @@ public class EgccApplication {
 				System.out.println("Please enter the title: ");
 				String title = scnr.next();
 				System.out.println("Please enter the starting bid: ");
-				double startBid = scnr.nextDouble();
+				double startBid = -1;
+				while (startBid < 0) {
+					while (!scnr.hasNextDouble()) {
+						scnr.next();
+						System.out.println("Starting bid must contain only numbers and decimals");
+					}
+					startBid = scnr.nextDouble();
+					if (startBid < 0) {
+						System.out.println("Starting bid must be 0 or greater");
+					}
+				}
 				System.out.println("Please enter the end date (YYYY-MM-DD): ");
 				String date = scnr.next();
 				System.out.println("How many categories?");
@@ -139,6 +168,11 @@ public class EgccApplication {
 			
 			else if(command == 7){				//ship item
 				System.out.println("Please enter the ID of the item to be shipped: ");
+				while (!scnr.hasNextInt())
+				{
+					scnr.next();
+					System.out.println("Please input only numbers");
+				}
 				itemID = scnr.nextInt();
 				success = connect.shipItem(itemID);
 				if(success){
@@ -150,6 +184,11 @@ public class EgccApplication {
 			
 			else if(command == 8){				//view highest bid
 				System.out.println("Please enter the ID of the item: ");
+				while (!scnr.hasNextInt())
+				{
+					scnr.next();
+					System.out.println("Please input only numbers");
+				}
 				itemID = scnr.nextInt();
 				outcome = connect.viewHighestBid(itemID);
 				
@@ -162,6 +201,11 @@ public class EgccApplication {
 			
 			else if(command == 9){			//place bid
 				System.out.println("Please enter the ID of the item: ");
+				while (!scnr.hasNextInt())
+				{
+					scnr.next();
+					System.out.println("Please input only numbers");
+				}
 				itemID = scnr.nextInt();
 				System.out.println("Please enter the bid: ");
 				input = scnr.nextDouble();
@@ -178,6 +222,17 @@ public class EgccApplication {
 				System.out.println("Please enter the seller's ID: ");
 				sellerID = scnr.nextInt();
 				System.out.println("Please enter the rating: ");
+				input = -1;
+				while (input < 0) {
+					while (!scnr.hasNextDouble()) {
+						scnr.next();
+						System.out.println("Starting bid must contain only numbers and decimals");
+					}
+					input = scnr.nextDouble();
+					if (input < 0) {
+						System.out.println("Starting bid must be 0 or greater");
+					}
+				}
 				input = scnr.nextDouble();
 				success = connect.rateSeller(sellerID, input);
 				
@@ -190,6 +245,11 @@ public class EgccApplication {
 			
 			else if(command == 11){			//close auction
 				System.out.println("Please enter the ID of the item: ");
+				while (!scnr.hasNextInt())
+				{
+					scnr.next();
+					System.out.println("Please input only numbers");
+				}
 				itemID = scnr.nextInt();
 				success = connect.closeAuction(itemID);
 				
