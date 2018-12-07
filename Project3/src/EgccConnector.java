@@ -55,30 +55,10 @@ public class EgccConnector {
     		// Specify the SQL query to run and execute the query. 
     		// Store the result in a ResultSet Object
     		ResultSet rst = stmt.executeQuery();
-    		// Get the metadata of the query and store it in a ResultSetMetaData object
-    		ResultSetMetaData rsmd = rst.getMetaData();
-    		
-    		// Get the number of columns retrieved 
-    		int numberOfColumns = rsmd.getColumnCount();
-    		// Go over the columns and print the name of the columns.
-    		
-	    	for (int i = 0; i < numberOfColumns; i++ ) {
-	    		// Note that the columns start at 1
-	    		rst.next();
-	    		System.out.println(rst.getString(i+1));
-	   			if (rst.getString(i+1) == null) {
-	       			userExists = false;
-     			} 
-	    						
-	    	}
-    		
-    		
-    		//set userID to userID of specified username
-    		ResultSet ID = stmt.executeQuery("select userID from egccuser where username = '"+username+"'");
-    		while(ID.next()){
-    			userID = ID.getInt("userID");	
+
+    		if (!rst.isBeforeFirst() ) {    
+    		    userExists = false;
     		}
-    		
     		
     		// Make sure you close the statement object when you are done.
     		stmt.close();	
