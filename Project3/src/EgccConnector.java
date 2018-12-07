@@ -15,7 +15,7 @@ public class EgccConnector {
     String password;
     String schema;
     // userID of the egccuser once they login
-    int userID = 111;
+    int userID = 111; //TODO: unhard-code this
  
     // Fill in code here to initialize conn so it connects to the database
     // using the provided parameters
@@ -89,7 +89,7 @@ public class EgccConnector {
     	try {
     		boolean updateSuccessful = false;
     		PreparedStatement pstmt = conn.prepareStatement(
-			"update egccUser set password=? where account_no=" + username);
+			"update egccUser set password=? where account_no='" + username + "'");
 			//Replace the 1st question mark with the new password
 			pstmt.setString(1, newPassword);
 			//Use executeUpdate() to run an update or an insert query. This returns the number of 
