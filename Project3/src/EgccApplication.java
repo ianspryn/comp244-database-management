@@ -14,16 +14,17 @@ public class EgccApplication {
 		double input;
 		
 		//logging in
-		System.out.println("Welcome to eGCC\n~~~~~~~~~~~~~~~~~~~~~~~~~~\nPlease enter your login credentials:");
-		System.out.println("Username: ");
+		System.out.println("Username: (example: u123456)");
 		String userNm = scnr.next();
 		System.out.println("Password: ");
 		String psswd = scnr.next();
-		System.out.println("Schema: ");
-		String schema = scnr.next();
+		//System.out.println("Schema: ");
+		//String schema = scnr.next();
+		String schema = "schema" + userNm;
 		
 		EgccConnector connect = new EgccConnector(userNm, psswd, schema);
 		
+		System.out.println("Welcome to eGCC\n~~~~~~~~~~~~~~~~~~~~~~~~~~\nPlease enter your login credentials:");
 		while(running){
 			//Get user input
 			System.out.println(
