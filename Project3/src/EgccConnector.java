@@ -50,11 +50,11 @@ public class EgccConnector {
     	try {
     		boolean userExists = true;
     		// declare and create an sql statement so we can run SQL statements:
-    		Statement stmt = conn.createStatement();
+    		PreparedStatement stmt = conn.prepareStatement("select username, password from egccUser where username = '" + username
+    				+ "' and password = '" + password+"'");
     		// Specify the SQL query to run and execute the query. 
     		// Store the result in a ResultSet Object
-    		ResultSet rst = stmt.executeQuery("select username, password from egccUser where username = '" + username
-    				+ "' and password = '" + password+"'");
+    		ResultSet rst = stmt.executeQuery();
     		// Get the metadata of the query and store it in a ResultSetMetaData object
     		ResultSetMetaData rsmd = rst.getMetaData();
     		
@@ -185,6 +185,7 @@ public class EgccConnector {
 			// Specify the SQL query to run and execute the query. 
 			// Store the result in a ResultSet Object
     		ResultSet rst = stmt.executeQuery("select * from item where itemID in ( select itemID from purchase where buyerID = " + Integer.toString(userID) + ")");
+
 			// Get the metadata of the query and store it in a ResultSetMetaData object
 			ResultSetMetaData rsmd = rst.getMetaData();
 			// Get the number of columns retrieved 
@@ -219,15 +220,15 @@ public class EgccConnector {
     // return the rating of the seller that is selling the item
     public double viewSellerRating(int itemID) {
     	try {
-    		Statement stmt = conn.createStatement();
+    		PreparedStatement stmt = conn.prepareStatement("select avg(rating) from sellerRating join item on sellerRating.sellerID = item.SellerID where item.ItemID = " + itemID);
 			
     		// Specify the SQL query to run and execute the query. 
 			// Store the result in a ResultSet Object
-			ResultSet rst = stmt.executeQuery("select avg(rating) from sellerRating join item on sellerRating.sellerID = item.SellerID where item.ItemID = " + itemID);
-
-			//TODO: FIX THIS STUFF
-			double row = rst.getDouble(1);			
-			
+			ResultSet rst = stmt.executeQuery();
+			double row = 0.0;
+			while(rst.next()){
+				row = rst.getDouble(1);	
+			}
 			// Make sure you close the statement object when you are done.
 			stmt.close();
 			return row;	
@@ -250,15 +251,17 @@ public class EgccConnector {
     //returns true if operation succeeded, false otherwise
     public boolean shipItem(int itemID) {
     	try {
-    		Statement stmt = conn.createStatement();
-			
+    		PreparedStatement stmt = conn.prepareStatement("update item set status = 'shipped' where ItemID = " + itemID);
+    		PreparedStatement stmt2 = conn.prepareStatement("update purchase set dateSold = current_date where ItemID = " + itemID);
+    		
     		// Specify the SQL query to run and execute the query. 
 			// Store the result in a ResultSet Object
-			double numRowsEffectedItem = stmt.executeUpdate("update item set status = 'shipped' where ItemID = " + itemID);
-			double numRowsEffectedPurchase = stmt.executeUpdate("update purchase set dateSold = current_date where ItemID = " + itemID);			
+			double numRowsEffectedItem = stmt.executeUpdate();
+			double numRowsEffectedPurchase = stmt2.executeUpdate();			
 			
 			// Make sure you close the statement object when you are done.
 			stmt.close();
+			stmt2.close();
 			return true;
     	} catch (SQLException e1) {
 			// TODO Auto-generated catch block
@@ -278,13 +281,13 @@ public class EgccConnector {
     //returns true if operation succeeded, false otherwise
     public boolean placeBid(int itemID, double bidValue) {
     	try {
-    		Statement stmt = conn.createStatement();
+    		PreparedStatement stmt = conn.prepareStatement("insert into Bid values ("+userID+", "+itemID+", CURDATE(), CURTIME(), "+bidValue+")");
 			
     		// Specify the SQL query to run and execute the query. 
 			// Store the result in a ResultSet Object
     		double highestBid = viewHighestBid(itemID);
     		if(bidValue > highestBid){
-    			double numRowsEffectedBid = stmt.executeUpdate("insert into Bid values ("+userID+", "+itemID+", CURDATE(), CURTIME(), "+bidValue+")");
+    			double numRowsEffectedBid = stmt.executeUpdate();
     			stmt.close();
     			return true;
     		}else{
@@ -312,13 +315,15 @@ public class EgccConnector {
     //returns true if operation succeeded, false otherwise
     public boolean closeAuction (int itemID) {
     	try {
-    		Statement stmt = conn.createStatement();
+    		PreparedStatement stmt = conn.prepareStatement("update item set status = 'closed' where ItemID = "+itemID);
+    		PreparedStatement stmt2 = conn.prepareStatement("insert into purchase values ("+userID+", "+itemID+", (select highestBid from item where ItemID = "+itemID+"), current_date, null)");
 			
     		// Specify the SQL query to run and execute the query. 
 			// Store the result in a ResultSet Object
-    		double numRowsEffectedItem = stmt.executeUpdate("update item set status = 'closed' where ItemID = "+itemID);
-    		double numRowsEffectedPurchase = stmt.executeUpdate("insert into purchase values ("+userID+", "+itemID+", (select highestBid from item where ItemID = "+itemID+"), current_date, null)");
+    		double numRowsEffectedItem = stmt.executeUpdate();
+    		double numRowsEffectedPurchase = stmt2.executeUpdate();
     		stmt.close();
+    		stmt2.close();
     		return true;  		
 			
     	} catch (SQLException e1) {
