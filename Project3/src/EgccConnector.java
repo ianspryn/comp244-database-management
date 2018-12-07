@@ -5,6 +5,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
 
 public class EgccConnector {
@@ -31,6 +34,7 @@ public class EgccConnector {
 			info.put("password", password);
 			//connect to the database
 			conn = DriverManager.getConnection("jdbc:mysql://COMPDBS300/"+schema, info);
+			conn.setAutoCommit(false);
 			//if all goes well, this statement should print
 			System.out.println("Connection successful!");
     	} catch (SQLException ex) {
@@ -55,8 +59,8 @@ public class EgccConnector {
     		    userExists = false; //all output was null. Username and password do not match anything
     		} else {
     			ResultSet ID = stmt.executeQuery("select userID from egccuser where username = '"+username+"'");
-    				ID.next();
-        			userID = ID.getInt("userID");
+				ID.next();
+    			userID = ID.getInt("userID");
     		}
     		stmt.close();	
     		return userExists;
@@ -71,7 +75,6 @@ public class EgccConnector {
     //returns true if operation succeeded, false otherwise
     public boolean changePassword( String username, String newPassword) {
     	try {
-    		boolean updateSuccessful = false;
     		//prepare SQL statement
     		PreparedStatement pstmt = conn.prepareStatement(
 			"update egccUser set password=? where username='" + username + "'");
@@ -80,11 +83,12 @@ public class EgccConnector {
 			//run SQL statement and get the number of rows effected
 			int rows = pstmt.executeUpdate();
 			//Check if any rows got updated. 
-			if (rows > 0) {
-				updateSuccessful = true;
+			if (rows < 1) {
+				return false;
 			}
 			pstmt.close();
-			return updateSuccessful;
+			conn.commit();
+			return true;
     	} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -249,15 +253,26 @@ public class EgccConnector {
     //returns true if operation succeeded, false otherwise
     public boolean putItem(String title, double startingBid, String endDate, String categories[]) {
     	try {
-    		boolean categoryDoesNotExist = false;
     		Statement stmt = conn.createStatement();
-    		ResultSet rst = stmt.executeQuery("select ItemID from item");
-    		int itemID = -1;
+    		
+    		//check date format and time stamp
+    		ResultSet rst = stmt.executeQuery("select sysdate()"); 
     		rst.next();
-    		int lastItemID = rst.getInt("ItemID");
-    		if (lastItemID > itemID) {
-    			itemID = lastItemID;
+    		String currentDateString = rst.getString("sysdate()");
+    		SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd");
+    		Date currentDate = parser.parse(currentDateString);
+    		Date userSpecifiedDate = parser.parse(endDate);
+    		if (userSpecifiedDate.getTime() < currentDate.getTime()) {
+    			System.out.println("Date is before current day. Please enter a later date");
+    			stmt.close();
+    			return false;
     		}
+    		
+    		
+    		//Generate the next ItemID number
+    		rst = stmt.executeQuery("select ItemID from item");
+    		int itemID = -1;
+    		int lastItemID;
     		while (rst.next()) {
     			lastItemID = rst.getInt("ItemID");
         		if (lastItemID > itemID) {
@@ -265,9 +280,9 @@ public class EgccConnector {
         		}
     		}
     		itemID++;
-    		stmt.close();
     		
-    		PreparedStatement pstmt = conn.prepareStatement("insert into item values (?, '?', '?', ?, ?, '?', ?, '?'");
+    		//Insert the item
+    		PreparedStatement pstmt = conn.prepareStatement("insert into item values (?, ?, ?, ?, ?, ?, ?, ?)");
     		pstmt.setInt(1, itemID);
     		pstmt.setString(2, title);
     		pstmt.setString(3, title);
@@ -280,21 +295,36 @@ public class EgccConnector {
 			//run SQL statement and get the number of rows effected
     		int rows = pstmt.executeUpdate();
     		
+    		if (rows < 1) {
+    			return false;
+    		}
+    		
     		for (int i = 0; i < categories.length; i++) {
-    			pstmt = conn.prepareStatement("insert into itemcategory values(itemID, (select ID from category where descrption = '" + categories[i] + "')");
-    			int rows2 = pstmt.executeUpdate();
-    			if (rows2 < 1) {
-    				categoryDoesNotExist = true;
+    			//Check if the category exists before inserting the item into the category
+    			rst = stmt.executeQuery("select ID from category where description = '" + categories[i] + "'");
+        		if (!rst.isBeforeFirst() ) {
+        			stmt.close();
+        		    pstmt.close();
+        		    System.out.println("Category does not exist.");
+        		    return false; //category does not exist
+        		}
+    			pstmt = conn.prepareStatement("insert into itemcategory values(" + itemID + ", (select ID from category where description = '" + categories[i] + "'))");
+    			rows = pstmt.executeUpdate();
+    			if (rows < 1) {
+    				return false;
     			}
     		}
+    		stmt.close();
     		pstmt.close();
     		//Check if any rows got updated. 
-    		if (rows > 0) {
-    			return true && !categoryDoesNotExist;
-    		}
+    		conn.commit();
+    		return true;
     	} catch (SQLException e) {
     		e.printStackTrace();
-    	}
+    	} catch (ParseException e) {
+			// TODO Auto-generated catch block
+    		System.out.println("Date must be in format \"YYYY-MM-DD\"");
+		}
     	return false;
     }
 
@@ -315,6 +345,7 @@ public class EgccConnector {
 			stmt.close();
 			stmt2.close();
 			if (numRowsEffectedItem > 0 && numRowsEffectedPurchase > 0) {
+				conn.commit();
 				return true;
 			}
     	} catch (SQLException e) {
@@ -379,6 +410,7 @@ public class EgccConnector {
     		ResultSet rst = stmt.executeQuery("select buyerID from sellerRating where buyerID = " + userID);
     		stmt.close();
     		if (rst.isBeforeFirst()) {
+    			System.out.println("You have already rated this person.");
     			return false; //the user has already rated this person.
     		}    		
     		
