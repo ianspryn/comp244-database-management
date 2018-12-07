@@ -380,7 +380,17 @@ public class EgccConnector {
     	try {
     		PreparedStatement stmt = conn.prepareStatement("insert into Bid values ("+userID+", "+itemID+", CURDATE(), CURTIME(), "+bidValue+")");
 			
-    		//TODO: check the status of the thing
+    		//check the status of the item
+    		PreparedStatement stmt2 = conn.prepareStatement("select status from item where itemID = "+itemID);
+    		ResultSet rst = stmt2.executeQuery();    		
+    		rst.next(); //move past column name
+    		String status = rst.getString(1); //get status
+    		stmt2.close();
+    		
+    		if(!status.equals("open")){
+    			System.out.println("Item is no longer open.");
+    			return false;
+    		}
     		
     		// Specify the SQL query to run and execute the query. 
 			// Store the result in a ResultSet Object
@@ -404,7 +414,7 @@ public class EgccConnector {
     	} catch (SQLException e) {
 			// TODO Auto-generated catch block
     		System.out.println("Not a valid item ID.");
-			e.printStackTrace();
+			//e.printStackTrace();
 			return false;
 		}
     }

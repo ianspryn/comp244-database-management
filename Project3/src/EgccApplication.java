@@ -113,8 +113,9 @@ public class EgccApplication {
 			}
 			
 			else if(command == 6){				//put item up for auction
+				scnr.next();
 				System.out.println("Please enter the title: ");
-				String title = scnr.next();
+				String title = scnr.nextLine();
 				double startBid = 1.0;
 				
 				running = true;
