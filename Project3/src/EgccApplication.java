@@ -14,13 +14,12 @@ public class EgccApplication {
 		double input;
 		
 		//logging in
-		System.out.println("Username: (example: u123456)");
-		String userNm = scnr.next();
+		System.out.println("Username: (example: u123456) PLEASE AND THANK YOU");
+		String userNm = "u" + scnr.next();
 		System.out.println("Password: ");
 		String psswd = scnr.next();
-		//System.out.println("Schema: ");
-		//String schema = scnr.next();
-		String schema = "schema" + userNm;
+		System.out.println("Schema: ");
+		String schema = scnr.next();
 		
 		EgccConnector connect = new EgccConnector(userNm, psswd, schema);
 		
@@ -29,7 +28,7 @@ public class EgccApplication {
 			//Get user input
 			System.out.println(
 					"Please enter one of the following commands:\n"
-					+ "0: Change my password\n"
+					+ "0: Change my username\n"
 					+ "1: View items I bid on\n"
 					+ "2: View my items\n"
 					+ "3: View my purchases\n"
