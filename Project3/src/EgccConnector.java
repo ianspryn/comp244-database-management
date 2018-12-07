@@ -351,6 +351,8 @@ public class EgccConnector {
     	try {
     		PreparedStatement stmt = conn.prepareStatement("insert into Bid values ("+userID+", "+itemID+", CURDATE(), CURTIME(), "+bidValue+")");
 			
+    		//TODO: check the status of the thing
+    		
     		// Specify the SQL query to run and execute the query. 
 			// Store the result in a ResultSet Object
     		double highestBid = viewHighestBid(itemID);
@@ -372,6 +374,7 @@ public class EgccConnector {
 			
     	} catch (SQLException e) {
 			// TODO Auto-generated catch block
+    		System.out.println("Not a valid item ID.");
 			e.printStackTrace();
 			return false;
 		}
@@ -405,6 +408,7 @@ public class EgccConnector {
     			return true;
     		}
     	} catch (SQLException e) {
+    		System.out.println("Not a valid seller ID");
     		e.printStackTrace();
     	}
     	return false;
@@ -436,6 +440,7 @@ public class EgccConnector {
 			
     	} catch (SQLException e) {
 			// TODO Auto-generated catch block
+    		System.out.println("Not a valid item ID.");
 			e.printStackTrace();
 		}
     	return false;
