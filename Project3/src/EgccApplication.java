@@ -12,6 +12,7 @@ public class EgccApplication {
 		int sellerID;
 		double outcome;
 		double input;
+		String[] categories;
 		
 		//logging in
 		System.out.println("Username: (example: 123456) Much apprec");
@@ -96,7 +97,28 @@ public class EgccApplication {
 			}
 			
 			else if(command == 6){				//put item up for auction
-				//TODO: fill in
+				System.out.println("Please enter the title: ");
+				String title = scnr.next();
+				System.out.println("Please enter the starting bid: ");
+				input = scnr.nextDouble();
+				System.out.println("Please enter the end date (YYYY-MM-DD): ");
+				String date = scnr.next();
+				System.out.println("How many categories?");
+				int a = scnr.nextInt();
+				categories = new String[a-1];
+				for(int i = 0; i < a; i++){
+					System.out.println("Please enter category "+(i+1)+"/"+a+": ");
+					categories[i] = scnr.next();
+				}
+				
+				
+				success = connect.putItem(title, input, date, categories);
+				
+				if(success){
+					System.out.println("Put item up for auction successfully.");
+				}else{
+					System.out.println("Could not put item up for auction.");
+				}
 			}
 			
 			else if(command == 7){				//ship item
