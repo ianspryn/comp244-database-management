@@ -15,7 +15,7 @@ public class EgccConnector {
     String password;
     String schema;
     // userID of the egccuser once they login
-    int userID = 111;
+    int userID;
  
     // Fill in code here to initialize conn so it connects to the database
     // using the provided parameters
@@ -68,9 +68,12 @@ public class EgccConnector {
     			}    			
     		}
     		
-    		//TODO: set userID = to whatever userID corresponds to the username
+    		//set userID to userID of specified username
     		ResultSet ID = stmt.executeQuery("select userID from egccuser where username = '"+username+"'");
-    		userID = ID.getInt(1);	
+    		while(ID.next()){
+    			userID = ID.getInt("userID");	
+    		}
+    		
     		
     		// Make sure you close the statement object when you are done.
     		stmt.close();	
