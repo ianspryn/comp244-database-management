@@ -83,7 +83,7 @@ public class EgccConnector {
 			pstmt.setString(1, newPassword);
 			//run SQL statement and get the number of rows effected
 			int rows = pstmt.executeUpdate();
-			//Check if any rows got updated. 
+			//Check if any rows got updated.
 			if (rows < 1) {
 				return false;
 			}
@@ -394,13 +394,31 @@ public class EgccConnector {
     	try {
     		PreparedStatement stmt = conn.prepareStatement("insert into Bid values ("+userID+", "+itemID+", CURDATE(), CURTIME(), "+bidValue+")");
 			
+    		//check the status of the item
+    		PreparedStatement stmt2 = conn.prepareStatement("select status from item where itemID = "+itemID);
+    		ResultSet rst = stmt2.executeQuery();    		
+    		rst.next(); //move past column name
+    		String status = rst.getString(1); //get status
+    		stmt2.close();
+    		
+    		if(!status.equals("open")){
+    			System.out.println("Item is no longer open.");
+    			return false;
+    		}
+    		
     		// Specify the SQL query to run and execute the query. 
 			// Store the result in a ResultSet Object
     		double highestBid = viewHighestBid(itemID);
     		if(bidValue > highestBid){
     			int numRowsEffectedBid = stmt.executeUpdate();
-    			stmt.close();
-    			return true;
+    			if(numRowsEffectedBid > 0){
+    				stmt.close();
+        			conn.commit();
+        			return true;
+    			}else{
+    				stmt.close();
+    				return false;
+    			}
     		}else{
     			System.out.println("Your bid isn't high enough");
     			stmt.close();
@@ -409,7 +427,8 @@ public class EgccConnector {
 			
     	} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+    		System.out.println("Not a valid item ID.");
+			//e.printStackTrace();
 			return false;
 		}
     }
@@ -443,6 +462,7 @@ public class EgccConnector {
     			return true;
     		}
     	} catch (SQLException e) {
+    		System.out.println("Not a valid seller ID");
     		e.printStackTrace();
     	}
     	return false;
@@ -458,17 +478,26 @@ public class EgccConnector {
 			
     		// Specify the SQL query to run and execute the query. 
 			// Store the result in a ResultSet Object
-    		double numRowsEffectedItem = stmt.executeUpdate();
-    		double numRowsEffectedPurchase = stmt2.executeUpdate();
-    		stmt.close();
-    		stmt2.close();
-    		return true;  		
+    		int numRowsEffectedItem = stmt.executeUpdate();
+    		int numRowsEffectedPurchase = stmt2.executeUpdate();
+    		
+    		if(numRowsEffectedItem > 0 && numRowsEffectedPurchase > 0){
+    			stmt.close();
+        		stmt2.close();
+        		return true;  		
+    		}else{
+    			stmt.close();
+        		stmt2.close();
+        		return false;  
+    		}
+    		
 			
     	} catch (SQLException e) {
 			// TODO Auto-generated catch block
+    		System.out.println("Not a valid item ID.");
 			e.printStackTrace();
-			return false;
 		}
+    	return false;
     }
 
     //Ian

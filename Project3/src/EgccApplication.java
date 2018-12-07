@@ -132,6 +132,7 @@ public class EgccApplication {
 			}
 			
 			else if(command == 6){				//put item up for auction
+				scnr.next();
 				System.out.println("Please enter the title: ");
 				String title = scnr.next();
 				System.out.println("Please enter the starting bid: ");
@@ -143,7 +144,7 @@ public class EgccApplication {
 					}
 					startBid = scnr.nextDouble();
 					if (startBid < 0) {
-						System.out.println("Starting bid must be 0 or greater");
+						System.out.println("Starting bid must be grater than $0.00");
 					}
 				}
 				System.out.println("Please enter the end date (YYYY-MM-DD): ");
@@ -162,7 +163,7 @@ public class EgccApplication {
 				if(success){
 					System.out.println("Put item up for auction successfully.");
 				}else{
-					System.out.println("Could not put item up for auction.");
+					System.out.println("Could not put item up for auction. Category does not exist.");
 				}
 			}
 			
@@ -178,7 +179,7 @@ public class EgccApplication {
 				if(success){
 					System.out.println("Item shipped successfully.");
 				}else{
-					System.out.println("Could not ship.");
+					System.out.println("Could not ship. Not a valid item ID or user does not have permission to ship this item.");
 				}
 			}
 			
@@ -207,6 +208,7 @@ public class EgccApplication {
 					System.out.println("Please input only numbers");
 				}
 				itemID = scnr.nextInt();
+				
 				System.out.println("Please enter the bid: ");
 				input = scnr.nextDouble();
 				success = connect.placeBid(itemID, input);
