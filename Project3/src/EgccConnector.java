@@ -84,7 +84,7 @@ public class EgccConnector {
 				updateSuccessful = true;
 			}
 			pstmt.close();
-		return updateSuccessful;
+			return updateSuccessful;
     	} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -240,8 +240,8 @@ public class EgccConnector {
     	} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return 0.0;
 		}
+    	return 0.0;
     }
 
     //Ian
@@ -253,6 +253,7 @@ public class EgccConnector {
     		Statement stmt = conn.createStatement();
     		ResultSet rst = stmt.executeQuery("select ItemID from item");
     		int itemID = -1;
+    		rst.next();
     		int lastItemID = rst.getInt("ItemID");
     		if (lastItemID > itemID) {
     			itemID = lastItemID;
@@ -303,7 +304,7 @@ public class EgccConnector {
     public boolean shipItem(int itemID) {
     	try {
     		PreparedStatement stmt = conn.prepareStatement("update item set status = 'shipped' where ItemID = " + itemID);
-    		PreparedStatement stmt2 = conn.prepareStatement("update purchase set dateSold = current_date where ItemID = " + itemID);
+    		PreparedStatement stmt2 = conn.prepareStatement("update purchase set dateSold = CURDATE() where ItemID = " + itemID);
     		
     		// Specify the SQL query to run and execute the query. 
 			// Store the result in a ResultSet Object
@@ -338,7 +339,7 @@ public class EgccConnector {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	return 0.0;
+    	return 0;
     }
 
     //Nate
@@ -407,7 +408,7 @@ public class EgccConnector {
     public boolean closeAuction (int itemID) {
     	try {
     		PreparedStatement stmt = conn.prepareStatement("update item set status = 'closed' where ItemID = "+itemID);
-    		PreparedStatement stmt2 = conn.prepareStatement("insert into purchase values ("+userID+", "+itemID+", (select highestBid from item where ItemID = "+itemID+"), current_date, null)");
+    		PreparedStatement stmt2 = conn.prepareStatement("insert into purchase values ("+userID+", "+itemID+", (select highestBid from item where ItemID = "+itemID+"), CURDATE(), null)");
 			
     		// Specify the SQL query to run and execute the query. 
 			// Store the result in a ResultSet Object

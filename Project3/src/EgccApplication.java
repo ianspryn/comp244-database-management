@@ -29,18 +29,23 @@ public class EgccApplication {
 		System.out.println("Welcome to eGCC\n~~~~~~~~~~~~~~~~~~~~~~~~~~\nPlease enter your login credentials:");
 		
 		//Login as member of database
-		System.out.println("LOGIN\n\nPlease enter your username: ");
-		userNm = scnr.next();
-		System.out.println("Password: ");
-		psswd = scnr.next();
-		success = connect.login(userNm, psswd);
-		
-		if(success){
-			System.out.println("\nLogin successful, welcome "+userNm+"!");
-		}else{
-			System.out.println("\nWrong username/password, please try again.");
+		running = true;
+		while(running){
+			System.out.println("LOGIN\n\nPlease enter your username: ");
+			userNm = scnr.next();
+			System.out.println("Password: ");
+			psswd = scnr.next();
+			success = connect.login(userNm, psswd);
+			if(success){
+				System.out.println("\nLogin successful, welcome "+userNm+"!");
+				running = false;
+			}else{
+				System.out.println("\nWrong username/password, please try again.");
+			}
 		}
-		
+
+		//main loop
+		running = true;
 		while(running){
 			//Get user input
 			System.out.println(
@@ -68,7 +73,13 @@ public class EgccApplication {
 				userNm = scnr.next();
 				System.out.println("Please enter your new password");
 				psswd = scnr.next();
-				connect.changePassword(userNm, psswd);
+				success = connect.changePassword(userNm, psswd);
+				
+				if(success){
+					System.out.println("Password updated.");
+				}else{
+					System.out.println("No user with that username!");
+				}
 			}
 			
 			else if(command == 1){				//view items I bid on
@@ -93,26 +104,31 @@ public class EgccApplication {
 				System.out.println("Please enter the item ID whose seller's rating you want to display: ");
 				itemID = scnr.nextInt();
 				outcome = connect.viewSellerRating(itemID);
-				System.out.println("Rating: "+outcome);
+				
+				if(outcome == 0){
+					System.out.println("Not a valid item ID.");
+				}else{
+					System.out.println("Rating: "+outcome);
+				}
 			}
 			
 			else if(command == 6){				//put item up for auction
 				System.out.println("Please enter the title: ");
 				String title = scnr.next();
 				System.out.println("Please enter the starting bid: ");
-				input = scnr.nextDouble();
+				double startBid = scnr.nextDouble();
 				System.out.println("Please enter the end date (YYYY-MM-DD): ");
 				String date = scnr.next();
 				System.out.println("How many categories?");
 				int a = scnr.nextInt();
-				categories = new String[a-1];
+				categories = new String[a];
 				for(int i = 0; i < a; i++){
 					System.out.println("Please enter category "+(i+1)+"/"+a+": ");
 					categories[i] = scnr.next();
 				}
 				
 				
-				success = connect.putItem(title, input, date, categories);
+				success = connect.putItem(title, startBid, date, categories);
 				
 				if(success){
 					System.out.println("Put item up for auction successfully.");
@@ -136,7 +152,12 @@ public class EgccApplication {
 				System.out.println("Please enter the ID of the item: ");
 				itemID = scnr.nextInt();
 				outcome = connect.viewHighestBid(itemID);
-				System.out.println("Highest bid: $" + outcome);
+				
+				if(outcome == 0){
+					System.out.println("Not a valid ID.");
+				}else{
+					System.out.println("Highest bid: $" + outcome);
+				}
 			}
 			
 			else if(command == 9){			//place bid
