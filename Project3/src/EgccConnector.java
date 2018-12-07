@@ -249,6 +249,7 @@ public class EgccConnector {
     //returns true if operation succeeded, false otherwise
     public boolean putItem(String title, double startingBid, String endDate, String categories[]) {
     	try {
+    		boolean categoryDoesNotExist = false;
     		Statement stmt = conn.createStatement();
     		ResultSet rst = stmt.executeQuery("select ItemID from item");
     		int itemID = -1;
@@ -277,10 +278,18 @@ public class EgccConnector {
     		
 			//run SQL statement and get the number of rows effected
     		int rows = pstmt.executeUpdate();
+    		
+    		for (int i = 0; i < categories.length; i++) {
+    			pstmt = conn.prepareStatement("insert into itemcategory values(itemID, (select ID from category where descrption = '" + categories[i] + "')");
+    			int rows2 = pstmt.executeUpdate();
+    			if (rows2 < 1) {
+    				categoryDoesNotExist = true;
+    			}
+    		}
     		pstmt.close();
     		//Check if any rows got updated. 
     		if (rows > 0) {
-    			return true;
+    			return true && !categoryDoesNotExist;
     		}
     	} catch (SQLException e) {
     		e.printStackTrace();
