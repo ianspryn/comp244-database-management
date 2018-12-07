@@ -92,7 +92,7 @@ public class EgccConnector {
     	try {
     		boolean updateSuccessful = false;
     		PreparedStatement pstmt = conn.prepareStatement(
-			"update egccUser set password=? where account_no='" + username + "'");
+			"update egccUser set password=? where username='" + username + "'");
 			//Replace the 1st question mark with the new password
 			pstmt.setString(1, newPassword);
 			//Use executeUpdate() to run an update or an insert query. This returns the number of 
