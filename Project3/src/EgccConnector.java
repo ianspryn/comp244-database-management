@@ -21,10 +21,8 @@ public class EgccConnector {
     // using the provided parameters
     public EgccConnector(String username, String password, String schema) {
     	try {
-			//Get a properties variable so we can pass the username and password to 
-			// the database.
+			//Get a properties variable so we can pass the username and password to the database.
 			Properties info = new Properties();
-			//Type in your ID number instead of the XXXXXX
 			this.username = username;
 			this.password = password;
 			this.schema = schema;
@@ -36,8 +34,7 @@ public class EgccConnector {
 			//if all goes well, this statement should print
 			System.out.println("Connection successful!");
     	} catch (SQLException ex) {
-    		//if an exception is thrown, display the message so that we know 
-    		// what went wrong.
+    		//if an exception is thrown, display the message so that we know what went wrong.
             System.out.print(ex.getMessage());
         }	
     }
@@ -49,28 +46,23 @@ public class EgccConnector {
     public boolean login(String username, String password) {
     	try {
     		boolean userExists = true;
-    		// declare and create an sql statement so we can run SQL statements:
+    		//prepare SQL statement
     		PreparedStatement stmt = conn.prepareStatement("select username, password from egccUser where username = '" + username
     				+ "' and password = '" + password+"'");
-    		// Specify the SQL query to run and execute the query. 
-    		// Store the result in a ResultSet Object
+    		//run SQL statement
     		ResultSet rst = stmt.executeQuery();
-
     		if (!rst.isBeforeFirst() ) {    
-    		    userExists = false;
+    		    userExists = false; //all output was null. Username and password do not match anything
     		} else {
     			ResultSet ID = stmt.executeQuery("select userID from egccuser where username = '"+username+"'");
     				ID.next();
         			userID = ID.getInt("userID");
     		}
-    		
-    		// Make sure you close the statement object when you are done.
     		stmt.close();	
-    		
     		return userExists;
-    	} catch (SQLException e1) {
+    	} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e.printStackTrace();
 		}
     	return false;
     }
@@ -80,24 +72,22 @@ public class EgccConnector {
     public boolean changePassword( String username, String newPassword) {
     	try {
     		boolean updateSuccessful = false;
+    		//prepare SQL statement
     		PreparedStatement pstmt = conn.prepareStatement(
 			"update egccUser set password=? where username='" + username + "'");
-			//Replace the 1st question mark with the new password
+			//insert user-specified input into query
 			pstmt.setString(1, newPassword);
-			//Use executeUpdate() to run an update or an insert query. This returns the number of 
-			// rows that were updated/inserted
-			//If we want to run a select query, we can use executeQuery.
+			//run SQL statement and get the number of rows effected
 			int rows = pstmt.executeUpdate();
 			//Check if any rows got updated. 
 			if (rows > 0) {
 				updateSuccessful = true;
 			}
-
 			pstmt.close();
 		return updateSuccessful;
-    	} catch (SQLException e1) {
+    	} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e.printStackTrace();
 		}
     	return false;
     }
@@ -106,30 +96,30 @@ public class EgccConnector {
     public void viewMyBiddingItems () {
     	try {
     		Statement stmt = conn.createStatement();
-			// Specify the SQL query to run and execute the query. 
-			// Store the result in a ResultSet Object
-			ResultSet rst = stmt.executeQuery("select * from Bid where BuyerID = '" + Integer.toString(userID) + "'");
+			//prepare and run SQL statement
+			ResultSet rst = stmt.executeQuery("select * from Bid where BuyerID = " + userID);
 			// Get the metadata of the query and store it in a ResultSetMetaData object
 			ResultSetMetaData rsmd = rst.getMetaData();
 			// Get the number of columns retrieved 
 			int numberOfColumns = rsmd.getColumnCount();
 			
+			//output the column names
 			for (int i = 1; i <= numberOfColumns; i++ ) {
 				System.out.print(rsmd.getColumnName(i)+ "\t");
 			}
 			System.out.println();
 			
+			//output each row
 			while (rst.next()) {
 				for (int i = 1; i <= numberOfColumns; i++) {
 					System.out.print(rst.getString(i) + "\t");
 				}
 				System.out.println();
 			}
-			// Make sure you close the statement object when you are done.
 			stmt.close();
-    	} catch (SQLException e1) {
+    	} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e.printStackTrace();
 		}
     }
 
@@ -138,30 +128,30 @@ public class EgccConnector {
     public void viewMyItems() {
     	try {
     		Statement stmt = conn.createStatement();
-			// Specify the SQL query to run and execute the query. 
-			// Store the result in a ResultSet Object
+			//prepare and run SQL statement
 			ResultSet rst = stmt.executeQuery("select * from item where sellerID = '" + Integer.toString(userID) + "'");
 			// Get the metadata of the query and store it in a ResultSetMetaData object
 			ResultSetMetaData rsmd = rst.getMetaData();
 			// Get the number of columns retrieved 
 			int numberOfColumns = rsmd.getColumnCount();
 			
+			//output the column names
 			for (int i = 1; i <= numberOfColumns; i++ ) {
 				System.out.print(rsmd.getColumnName(i)+ "\t");
 			}
 			System.out.println();
 			
+			//output each row
 			while (rst.next()) {
 				for (int i = 1; i <= numberOfColumns; i++) {
 					System.out.print(rst.getString(i) + "\t");
 				}
 				System.out.println();
 			}
-			// Make sure you close the statement object when you are done.
 			stmt.close();
-    	} catch (SQLException e1) {
+    	} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e.printStackTrace();
 		}
     }
 
@@ -171,8 +161,7 @@ public class EgccConnector {
     public void viewMyPurchases() {
     	try {
     		Statement stmt = conn.createStatement();
-			// Specify the SQL query to run and execute the query. 
-			// Store the result in a ResultSet Object
+			//prepare and run SQL statement
     		ResultSet rst = stmt.executeQuery("select * from item where itemID in ( select itemID from purchase where buyerID = " + Integer.toString(userID) + ")");
 
 			// Get the metadata of the query and store it in a ResultSetMetaData object
@@ -180,22 +169,23 @@ public class EgccConnector {
 			// Get the number of columns retrieved 
 			int numberOfColumns = rsmd.getColumnCount();
 			
+			//output the column names
 			for (int i = 1; i <= numberOfColumns; i++ ) {
 				System.out.print(rsmd.getColumnName(i)+ "\t");
 			}
 			System.out.println();
 			
+			//output each row
 			while (rst.next()) {
 				for (int i = 1; i <= numberOfColumns; i++) {
 					System.out.print(rst.getString(i) + "\t");
 				}
 				System.out.println();
 			}
-			// Make sure you close the statement object when you are done.
 			stmt.close();
-    	} catch (SQLException e1) {
+    	} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e.printStackTrace();
 		}
     }
 
@@ -204,31 +194,31 @@ public class EgccConnector {
     public void searchByKeyword(String keyword) {
     	try {
     		Statement stmt = conn.createStatement();
-			// Specify the SQL query to run and execute the query. 
-			// Store the result in a ResultSet Object
-    		ResultSet rst = stmt.executeQuery("select * from item where description like '" + keyword + "'");
+			//prepare and run SQL statement
+    		ResultSet rst = stmt.executeQuery("select * from item where description like '%" + keyword + "%'");
 
 			// Get the metadata of the query and store it in a ResultSetMetaData object
 			ResultSetMetaData rsmd = rst.getMetaData();
 			// Get the number of columns retrieved 
 			int numberOfColumns = rsmd.getColumnCount();
 			
+			//output the column names
 			for (int i = 1; i <= numberOfColumns; i++ ) {
 				System.out.print(rsmd.getColumnName(i)+ "\t");
 			}
 			System.out.println();
 			
+			//output each row
 			while (rst.next()) {
 				for (int i = 1; i <= numberOfColumns; i++) {
 					System.out.print(rst.getString(i) + "\t");
 				}
 				System.out.println();
 			}
-			// Make sure you close the statement object when you are done.
 			stmt.close();
-    	} catch (SQLException e1) {
+    	} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e.printStackTrace();
 		}
     }
 
@@ -247,9 +237,9 @@ public class EgccConnector {
 			// Make sure you close the statement object when you are done.
 			stmt.close();
 			return row;	
-    	} catch (SQLException e1) {
+    	} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e.printStackTrace();
 			return 0.0;
 		}
     }
@@ -258,6 +248,52 @@ public class EgccConnector {
     // put the item specified up for auction 
     //returns true if operation succeeded, false otherwise
     public boolean putItem(String title, double startingBid, String endDate, String categories[]) {
+    	try {
+    		boolean categoryDoesNotExist = false;
+    		Statement stmt = conn.createStatement();
+    		ResultSet rst = stmt.executeQuery("select ItemID from item");
+    		int itemID = -1;
+    		int lastItemID = rst.getInt("ItemID");
+    		if (lastItemID > itemID) {
+    			itemID = lastItemID;
+    		}
+    		while (rst.next()) {
+    			lastItemID = rst.getInt("ItemID");
+        		if (lastItemID > itemID) {
+        			itemID = lastItemID;
+        		}
+    		}
+    		itemID++;
+    		stmt.close();
+    		
+    		PreparedStatement pstmt = conn.prepareStatement("insert into item values (?, '?', '?', ?, ?, '?', ?, '?'");
+    		pstmt.setInt(1, itemID);
+    		pstmt.setString(2, title);
+    		pstmt.setString(3, title);
+    		pstmt.setDouble(4, startingBid);
+    		pstmt.setDouble(5, startingBid);
+    		pstmt.setString(6, endDate);
+    		pstmt.setInt(7, userID);
+    		pstmt.setString(8, "open");
+    		
+			//run SQL statement and get the number of rows effected
+    		int rows = pstmt.executeUpdate();
+    		
+    		for (int i = 0; i < categories.length; i++) {
+    			pstmt = conn.prepareStatement("insert into itemcategory values(itemID, (select ID from category where descrption = '" + categories[i] + "')");
+    			int rows2 = pstmt.executeUpdate();
+    			if (rows2 < 1) {
+    				categoryDoesNotExist = true;
+    			}
+    		}
+    		pstmt.close();
+    		//Check if any rows got updated. 
+    		if (rows > 0) {
+    			return true && !categoryDoesNotExist;
+    		}
+    	} catch (SQLException e) {
+    		e.printStackTrace();
+    	}
     	return false;
     }
 
@@ -277,17 +313,31 @@ public class EgccConnector {
 			// Make sure you close the statement object when you are done.
 			stmt.close();
 			stmt2.close();
-			return true;
-    	} catch (SQLException e1) {
+			if (numRowsEffectedItem > 0 && numRowsEffectedPurchase > 0) {
+				return true;
+			}
+    	} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			return false;
+			e.printStackTrace();
 		}
+    	return false;
     }
     
     //Ian
     //returns the value of the highest bid. You can assume that the trigger is working properly.
     public double viewHighestBid (int itemID) {
+    	try {
+    		Statement stmt = conn.createStatement();
+			//prepare and run SQL statement
+    		ResultSet rst = stmt.executeQuery("select max(currentBid) from bid where itemID = " + itemID);    		
+    		rst.next(); //move past column name
+    		double maxBid = rst.getDouble("max(currentBid)"); //get maximum current bid
+    		stmt.close();
+    		return maxBid;
+    	} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	return 0.0;
     }
 
@@ -311,9 +361,9 @@ public class EgccConnector {
     			return false;
     		}
 			
-    	} catch (SQLException e1) {
+    	} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e.printStackTrace();
 			return false;
 		}
     }
@@ -322,6 +372,32 @@ public class EgccConnector {
     // place a rating on the seller specified
     //returns true if operation succeeded, false otherwise
     public boolean rateSeller(int sellerID, double rating) {
+    	try {
+    		Statement stmt = conn.createStatement();
+			//prepare and run SQL statement
+    		ResultSet rst = stmt.executeQuery("select buyerID from sellerRating where buyerID = " + userID);
+    		stmt.close();
+    		if (rst.isBeforeFirst()) {
+    			return false; //the user has already rated this person.
+    		}    		
+    		
+    		//place the rating
+    		PreparedStatement pstmt = conn.prepareStatement("insert into item values (?, ?, ?, '?', sysdate()");
+    		pstmt.setInt(1, sellerID);
+    		pstmt.setInt(2, userID);
+    		pstmt.setDouble(3, rating);
+    		pstmt.setString(4, "Awful. Terrible. 10/10 would not buy again.");
+    		
+			//run SQL statement and get the number of rows effected
+    		int rows = pstmt.executeUpdate();
+    		pstmt.close();
+    		//Check if any rows got updated. 
+    		if (rows > 0) {
+    			return true;
+    		}
+    	} catch (SQLException e) {
+    		e.printStackTrace();
+    	}
     	return false;
     }	
 
@@ -341,9 +417,9 @@ public class EgccConnector {
     		stmt2.close();
     		return true;  		
 			
-    	} catch (SQLException e1) {
+    	} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e.printStackTrace();
 			return false;
 		}
     }
@@ -356,8 +432,8 @@ public class EgccConnector {
 			conn.close();
 	    	return true;
 		}
-    	catch(SQLException e1){
-    		System.out.println(e1.getMessage());
+    	catch(SQLException e){
+    		System.out.println(e.getMessage());
     		return false;
     	}
 		catch(Exception e2){

@@ -136,7 +136,7 @@ public class EgccApplication {
 				System.out.println("Please enter the ID of the item: ");
 				itemID = scnr.nextInt();
 				outcome = connect.viewHighestBid(itemID);
-				System.out.println("Highest bid: " + outcome);
+				System.out.println("Highest bid: $" + outcome);
 			}
 			
 			else if(command == 9){			//place bid
