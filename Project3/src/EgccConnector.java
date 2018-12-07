@@ -60,12 +60,17 @@ public class EgccConnector {
     		
     		// Get the number of columns retrieved 
     		int numberOfColumns = rsmd.getColumnCount();
-    		// Go over the columns and print the name of the columns. 
-    		for (int i = 0; i < numberOfColumns; i++ ) {
-    			// Note that the columns start at 1
-    			if (rsmd.getColumnName(i+1) == null) {
-    				userExists = false;
-    			}    			
+    		// Go over the columns and print the name of the columns.
+    		while(rst.next()){
+	    		for (int i = 0; i < numberOfColumns; i++ ) {
+	    			// Note that the columns start at 1
+	    			
+	    			System.out.println(rst.getString(i+1));
+	    			if (rst.getString(i+1) == null) {
+	        			userExists = false;
+	       			} 
+	    						
+	    		}
     		}
     		
     		//set userID to userID of specified username
