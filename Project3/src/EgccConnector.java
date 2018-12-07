@@ -57,6 +57,10 @@ public class EgccConnector {
     		ResultSet rst = stmt.executeQuery();
     		if (!rst.isBeforeFirst() ) {    
     		    userExists = false;
+    		} else {
+    			ResultSet ID = stmt.executeQuery("select userID from egccuser where username = '"+username+"'");
+    				ID.next();
+        			userID = ID.getInt("userID");
     		}
     		
     		// Make sure you close the statement object when you are done.
@@ -197,7 +201,34 @@ public class EgccConnector {
     //Ian
     // fill in code here that displays all the items whose description contains the keyword
     public void searchByKeyword(String keyword) {
-    	
+    	try {
+    		Statement stmt = conn.createStatement();
+			// Specify the SQL query to run and execute the query. 
+			// Store the result in a ResultSet Object
+    		ResultSet rst = stmt.executeQuery("select * from item where description like '" + keyword + "'");
+
+			// Get the metadata of the query and store it in a ResultSetMetaData object
+			ResultSetMetaData rsmd = rst.getMetaData();
+			// Get the number of columns retrieved 
+			int numberOfColumns = rsmd.getColumnCount();
+			
+			for (int i = 1; i <= numberOfColumns; i++ ) {
+				System.out.print(rsmd.getColumnName(i)+ "\t");
+			}
+			System.out.println();
+			
+			while (rst.next()) {
+				for (int i = 1; i <= numberOfColumns; i++) {
+					System.out.print(rst.getString(i) + "\t");
+				}
+				System.out.println();
+			}
+			// Make sure you close the statement object when you are done.
+			stmt.close();
+    	} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
     }
 
     //Nate
@@ -210,9 +241,8 @@ public class EgccConnector {
 			// Store the result in a ResultSet Object
 			ResultSet rst = stmt.executeQuery();
 			double row = 0.0;
-			while(rst.next()){
-				row = rst.getDouble(1);	
-			}
+			rst.next();
+			row = rst.getDouble(1);	
 			// Make sure you close the statement object when you are done.
 			stmt.close();
 			return row;	
