@@ -26,7 +26,24 @@ public class EgccApplication {
 		
 		while(running){
 			//Get user input
-			System.out.println("Please enter one of the following commands:\n0: Login\n1: Change my password\n2: View items I bid on\n3: View my items\n4: View my purchases\n5: Search by keyword\n6: View seller rating\n7: Put item up for auction\n8: Ship an item\n9: View highest bid\n10: Place a bid\n11: Rate a seller\n12: Close an auction\n13: Exit eGCC\nInput a command: ");
+			System.out.println(
+					"Please enter one of the following commands:\n"
+					+ "0: Change my password\n"
+					+ "1: View items I bid on\n"
+					+ "2: View my items\n"
+					+ "3: View my purchases\n"
+					+ "4: Search by keyword\n"
+					+ "5: View seller rating\n"
+					+ "6: View my purchases\n"
+					+ "7: Put item up for auction\n"
+					+ "8: Ship an item\n"
+					+ "9: View highest bid\n"
+					+ "10: Place a bid\n"
+					+ "11: Rate a seller\n"
+					+ "12: Close an auction\n"
+					+ "13: Exit eGCC\n"
+					+ "Input a command: "
+				);
 			command = scnr.nextInt();
 			
 			//execute command
