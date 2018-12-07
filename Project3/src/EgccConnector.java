@@ -92,7 +92,7 @@ public class EgccConnector {
     	try {
     		boolean updateSuccessful = false;
     		PreparedStatement pstmt = conn.prepareStatement(
-			"update egccUser set password=? where account_no='" + username + "'");
+			"update egccUser set password=? where username='" + username + "'");
 			//Replace the 1st question mark with the new password
 			pstmt.setString(1, newPassword);
 			//Use executeUpdate() to run an update or an insert query. This returns the number of 
@@ -210,10 +210,11 @@ public class EgccConnector {
     		// Specify the SQL query to run and execute the query. 
 			// Store the result in a ResultSet Object
 			ResultSet rst = stmt.executeQuery("select avg(rating) from sellerRating join item on sellerRating.sellerID = item.SellerID where item.ItemID = " + itemID);
-
+			double row = 0.0;
 			//TODO: FIX THIS STUFF
-			double row = rst.getDouble(1);			
-			
+			while(rst.next()){
+				row = rst.getDouble(1);	
+			}
 			// Make sure you close the statement object when you are done.
 			stmt.close();
 			return row;	
