@@ -473,9 +473,22 @@ public class EgccConnector {
     //returns true if operation succeeded, false otherwise
     public boolean closeAuction (int itemID) {
     	try {
+    		//check the status of the item
+    		PreparedStatement stmt3 = conn.prepareStatement("select status from item where itemID = "+itemID);
+    		ResultSet rst = stmt3.executeQuery();    		
+    		rst.next(); //move past column name
+    		String status = rst.getString(1); //get status
+    		stmt3.close();
+    		
+    		if(!status.equals("open")){
+    			System.out.println("Item is no longer open.");
+    			return false;
+    		}
+    		
+    		//else...
     		PreparedStatement stmt = conn.prepareStatement("update item set status = 'closed' where ItemID = "+itemID);
     		PreparedStatement stmt2 = conn.prepareStatement("insert into purchase values ("+userID+", "+itemID+", (select highestBid from item where ItemID = "+itemID+"), CURDATE(), null)");
-			
+    		
     		// Specify the SQL query to run and execute the query. 
 			// Store the result in a ResultSet Object
     		int numRowsEffectedItem = stmt.executeUpdate();
@@ -484,6 +497,7 @@ public class EgccConnector {
     		if(numRowsEffectedItem > 0 && numRowsEffectedPurchase > 0){
     			stmt.close();
         		stmt2.close();
+        		conn.commit();
         		return true;  		
     		}else{
     			stmt.close();
@@ -495,7 +509,7 @@ public class EgccConnector {
     	} catch (SQLException e) {
 			// TODO Auto-generated catch block
     		System.out.println("Not a valid item ID.");
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
     	return false;
     }
